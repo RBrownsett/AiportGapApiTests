@@ -48,15 +48,15 @@ namespace AiportGapApiTests
 
         [Test]
 
-        public async Task GetFavouriteByIdRetunrs200()
+        public async Task GetFavouriteByIdReturns200()
         {
-            var requestMessage = new HttpRequestMessage(HttpMethod.Get, "api/favorites/?airport_id=2983");
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, "api/favorites/");
 
             var client = _apiClient.CreateApiClient();
             var token = GetToken().Result;
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Token", token?.ToString());
-            var parameter = new Dictionary<string, string> { { "airport_id", "2983" } };
+            var parameter = new Dictionary<string, string> { { "id", "12646" } };
             var encodedContent = new FormUrlEncodedContent(parameter);
 
             //Set the content of the request message object to your paramaters
@@ -66,7 +66,40 @@ namespace AiportGapApiTests
 
             Assert.That(response.IsSuccessStatusCode);
 
+            var responseBody = await response.Content.ReadAsStringAsync();
 
+            Console.WriteLine(responseBody);
+
+        }
+
+
+        [Test]
+
+        public async Task PatchFavouriteByIdReturns200()
+        {
+            var favouriteId = "12646";
+
+            var requestMessage = new HttpRequestMessage(HttpMethod.Patch, "api/favorites/"+ favouriteId);
+
+            var client = _apiClient.CreateApiClient();
+            var token = GetToken().Result;
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Token", token?.ToString());
+            var parameter = new Dictionary<string, string> { { "note", "testing api" } };
+            var encodedContent = new FormUrlEncodedContent(parameter);
+
+            //Set the content of the request message object to your paramaters
+            requestMessage.Content = encodedContent;
+
+            var response = await client.SendAsync(requestMessage);
+
+            Assert.That(response.IsSuccessStatusCode);
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            Assert.That(responseBody.Contains("testing api"));
+
+            Console.WriteLine(responseBody);
 
         }
 
